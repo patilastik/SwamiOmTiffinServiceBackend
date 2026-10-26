@@ -33,5 +33,9 @@ public class ReviewController {
          {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
          }
+        catch(RuntimeException e)
+         {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+         }
     }
 }

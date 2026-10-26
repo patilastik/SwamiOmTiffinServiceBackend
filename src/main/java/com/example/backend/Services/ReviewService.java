@@ -5,17 +5,29 @@ import com.example.demo.entity.Reviewer;
 import org.springframework.stereotype.Service;
 import com.example.demo.exceptions.InvalidValueException;
 import com.example.demo.exceptions.ActionNotAllowed;
+
+import org.springframework.web.client.RestClient;
+import org.springframework.http.MediaType;
+
+import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Pattern;
+
+import com.openai.models.moderations.ModerationCreateParams;
+import com.theokoken.ai.openai.OpenAIClient;
+import com.theokoken.ai.openai.OpenAIOkHttpClient;
+import org.springframework.beans.factory.annotation.Value;
 
 @Service
 public class ReviewService {
 
     private final ReviewerRepository reviewerRepository;
+    private final OpenAIClient client;
 
     // Spring Boot automatically injects the objects of these repositories classes
-    public ReviewService(ReviewerRepository reviewerRepository) {
+    public ReviewService(ReviewerRepository reviewerRepository,@Value("${openai.api.key}") String apiKey) {
         this.reviewerRepository = reviewerRepository;
+        this.client = OpenAIOkHttpClient.builder().apiKey(apiKey).build();
     }
 
     // Things needs to be check:
@@ -28,23 +40,23 @@ public class ReviewService {
     public void storeReview(ReviewDTO reviewDTO) 
      {
         // Check whether data for all fields is send from frontend
-        if(reviewDTO.getEmail().isEmpty()||reviewDTO.getEmail()==null)
+        if(reviewDTO.getEmail()==null || reviewDTO.getEmail().isBlank())
         {
             throw new InvalidValueException("Email is required");
         }
-        if(reviewDTO.getFirstName().isEmpty()||reviewDTO.getFirstName()==null)
+        if(reviewDTO.getFirstName()==null || reviewDTO.getFirstName().isBlank())
         {
             throw new InvalidValueException("First Name is required");
         }
-        if(reviewDTO.getLastName().isEmpty()||reviewDTO.getLastName()==null)
+        if(reviewDTO.getLastName()==null || reviewDTO.getLastName().isBlank())
         {
             throw new InvalidValueException("Last Name is required");
         }
-        if(reviewDTO.getMessage().isEmpty()||reviewDTO.getMessage()==null)
+        if(reviewDTO.getMessage()==null || reviewDTO.getMessage().isBlank())
         {
             throw new InvalidValueException("Message is required");
         }
-        if(reviewDTO.getStars()<0||reviewDTO.getStars()>5)
+        if(reviewDTO.getStars()==null || reviewDTO.getStars()<0||reviewDTO.getStars()>5)
         {
             throw new InvalidValueException("Stars should be between 0 and 5");
         }
@@ -59,44 +71,49 @@ public class ReviewService {
          {
             throw new ActionNotAllowed("You have already submitted a review.");
          }
-        // setting up some bad words which should not be in first name, last name and in the review message
-        Set<String> badWords = new HashSet<>(Set.of("fuck", "bitch", "bastard", "asshole", "cunt", "hell", "damn", "shit", 
-        "motherfucker", "sonofabitch", "motherfucking", "sonofabitching", "sex", "porn", "pornography", "pornstar", "dick", 
-        "pussy", "vagina", "penis", "tit","boob", "breast", "nipple", "anus", "arse", "arsey", "arsehole"));
         String firstName = reviewDTO.getFirstName();
-        for(String badWord : badWords)
-         {
-            if(firstName.toLowerCase().startsWith(badWord)) // If first name starts with any bad word 
-             {
-                throw new InvalidValueException("First Name contains bad word");
-             }
-         }
-        String lastName = reviewDTO.getLastName();
-        for(String badWord : badWords)
-         {
-            if(lastName.toLowerCase().startsWith(badWord)) // If last name starts with any bad word 
-             {
-                throw new InvalidValueException("Last Name contains bad word");
-             }
-         }
-        String message = reviewDTO.getMessage();
-        String[] messageWords = message.toLowerCase().split("\\W+"); //Splitting the message into words
-        for(String word:messageWords) // iterating the review message and checking whether it contains any bad word or not
+        if(containsHarmfulContent(firstName))
         {
-            if(badWords.contains(word))
-            {
-                throw new InvalidValueException("Message contains bad word");
-            }
+            throw new InvalidValueException("First Name contains bad word");
+        }
+        String lastName = reviewDTO.getLastName();
+        if(containsHarmfulContent(lastName))
+        {
+            throw new InvalidValueException("Last Name contains bad word");
+        }
+        String message = reviewDTO.getMessage();
+        if(containsHarmfulContent(message))
+        {
+            throw new InvalidValueException("Message contains bad word");
         }
         short stars = reviewDTO.getStars();
         Reviewer reviewer = new Reviewer(); // Entity object creation 
         reviewer.setEmail(email);
         reviewer.setMessage(message);
-        reviwer.setFirstName(firstName);
-        reviwer.setLastName(lastName);
-        reviwer.setStars(stars);
+        reviewer.setFirstName(firstName);
+        reviewer.setLastName(lastName);
+        reviewer.setStars(stars);
         // Call the save() method of the repository class to save the object to the database
         Reviewer savedReviewer = reviewerRepository.save(reviewer);
-
      }
+    
+    // Method to check whether a string contains bad word or content
+    public boolean containsHarmfulContent(String message) 
+     {
+       try 
+       {
+         ModerationCreateParams params = ModerationCreateParams.builder()
+                 .model("omni-moderation-latest")
+                 .input(message)
+                 .build();
+     
+         var response = client.moderations().create(params);
+     
+         return response.results().get(0).flagged();
+       }
+       catch(Exception e)
+       {
+         throw new RuntimeException("Something went wrong, please try again later!");
+       }
+    }
 }

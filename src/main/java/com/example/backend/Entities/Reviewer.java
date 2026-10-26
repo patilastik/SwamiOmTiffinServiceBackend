@@ -17,10 +17,20 @@ public class Reviewer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long reviewer_id;
+
+    @Column(unique = true)
     private String email;
+
+    @Column(name = "first_name")
     private String firstName;
+
+    @Column(name = "last_name")
     private String lastName;
+
+    @Column(name = "message")
     private String message;
+
+    @Column(name = "stars")
     private short stars;
 
     public Reviewer(String email, String firstName, String lastName, String message, short stars) {

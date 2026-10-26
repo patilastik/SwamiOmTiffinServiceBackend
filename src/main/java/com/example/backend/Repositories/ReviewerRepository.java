@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ReviewerRepository extends JpaRepository<Reviewer, Long> {
-
+    Optional<Reviewer> findByEmail(String email); // returns the record with provided email if presnet otherwise returns null
 }

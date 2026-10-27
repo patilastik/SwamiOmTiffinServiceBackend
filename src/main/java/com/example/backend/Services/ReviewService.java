@@ -1,10 +1,11 @@
-package com.example.demo.service;
+// package com.example.demo.service;
+package com.example.backend.services;
 
-import com.example.demo.dto.ReviewDTO;
-import com.example.demo.entity.Reviewer;
+import com.example.backend.dto.ReviewDTO;
+import com.example.backend.entities.Reviewer;
 import org.springframework.stereotype.Service;
-import com.example.demo.exceptions.InvalidValueException;
-import com.example.demo.exceptions.ActionNotAllowed;
+import com.example.backend.exceptions.InvalidValueException;
+import com.example.backend.exceptions.ActionNotAllowed;
 
 import org.springframework.web.client.RestClient;
 import org.springframework.http.MediaType;
@@ -14,9 +15,12 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 import com.openai.models.moderations.ModerationCreateParams;
-import com.theokoken.ai.openai.OpenAIClient;
-import com.theokoken.ai.openai.OpenAIOkHttpClient;
+import com.openai.client.OpenAIClient;
+import com.openai.client.okhttp.OpenAIOkHttpClient;
 import org.springframework.beans.factory.annotation.Value;
+
+
+import com.example.backend.repositories.ReviewerRepository;
 
 @Service
 public class ReviewService {
@@ -56,7 +60,7 @@ public class ReviewService {
         {
             throw new InvalidValueException("Message is required");
         }
-        if(reviewDTO.getStars()==null || reviewDTO.getStars()<0||reviewDTO.getStars()>5)
+        if(reviewDTO.getStars()<0||reviewDTO.getStars()>5)
         {
             throw new InvalidValueException("Stars should be between 0 and 5");
         }
@@ -71,17 +75,45 @@ public class ReviewService {
          {
             throw new ActionNotAllowed("You have already submitted a review.");
          }
+        // Set which contains bad words, which I am going to check for first name, last name and message.
+        Set<String> badWords = new HashSet<>(Set.of("fuck", "bitch", "bastard", "asshole", "cunt", "hell", "damn", "shit", 
+        "motherfucker", "sonofabitch", "motherfucking", "sonofabitching", "sex", "porn", "pornography", "pornstar", "dick", 
+        "pussy", "vagina", "penis", "tit","boob", "breast", "nipple", "anus", "arse", "arsey", "arsehole"));
         String firstName = reviewDTO.getFirstName();
-        if(containsHarmfulContent(firstName))
+        String firstNameLower = firstName.toLowerCase();
+        for(String badWord : badWords) // first layer for checking bad word
+         {
+            if(firstNameLower.startsWith(badWord)) // If first name starts with any bad word 
+             {
+                throw new InvalidValueException("First Name contains bad word");
+             }
+         }
+        if(containsHarmfulContent(firstName)) // second layer for checking bad word
         {
             throw new InvalidValueException("First Name contains bad word");
         }
         String lastName = reviewDTO.getLastName();
-        if(containsHarmfulContent(lastName))
+        String lastNameLower = lastName.toLowerCase();
+        for(String badWord : badWords) // first layer for checking bad word
+         {
+            if(lastNameLower.startsWith(badWord)) // If last name starts with any bad word 
+             {
+                throw new InvalidValueException("Last Name contains bad word");
+             }
+         }
+        if(containsHarmfulContent(lastName)) // second layer for checking bad word
         {
             throw new InvalidValueException("Last Name contains bad word");
         }
         String message = reviewDTO.getMessage();
+        String[] messageWords = message.toLowerCase().split("\\W+"); //Splitting the message into 
+        for(String word:messageWords) // iterating the review message and checking whether it contains any bad word or not
+        {
+            if(badWords.contains(word)) 
+            {
+                throw new InvalidValueException("Message contains bad word");
+            }
+        }
         if(containsHarmfulContent(message))
         {
             throw new InvalidValueException("Message contains bad word");
@@ -94,7 +126,7 @@ public class ReviewService {
         reviewer.setLastName(lastName);
         reviewer.setStars(stars);
         // Call the save() method of the repository class to save the object to the database
-        Reviewer savedReviewer = reviewerRepository.save(reviewer);
+        reviewerRepository.save(reviewer);
      }
     
     // Method to check whether a string contains bad word or content
@@ -108,7 +140,7 @@ public class ReviewService {
                  .build();
      
          var response = client.moderations().create(params);
-     
+         System.out.println("API Response: " + response.toString());
          return response.results().get(0).flagged();
        }
        catch(Exception e)

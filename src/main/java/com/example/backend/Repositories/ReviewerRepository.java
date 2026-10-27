@@ -9,4 +9,5 @@ import java.util.Optional;
 @Repository
 public interface ReviewerRepository extends JpaRepository<Reviewer, Long> {
     Optional<Reviewer> findByEmail(String email); // returns the record with provided email if presnet otherwise returns null
+    List<Reviewer> findTop5ByOrderByCreatedAtDesc(); // returns the first 5 reviews
 }

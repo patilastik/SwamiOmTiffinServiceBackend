@@ -35,6 +35,10 @@ public class Reviewer {
     @Column(name = "stars")
     private short stars;
 
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+
     public Reviewer(String email, String firstName, String lastName, String message, short stars) {
         this.email = email;
         this.firstName = firstName;
@@ -42,4 +46,12 @@ public class Reviewer {
         this.message = message;
         this.stars = stars;
     }
+
+    // create an onCreate() and set createdAt to current date time
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
+
+
 }

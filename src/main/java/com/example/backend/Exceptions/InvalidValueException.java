@@ -1,4 +1,4 @@
-package com.example.demo.exceptions;
+package com.example.backend.exceptions;
 
 public class InvalidValueException extends RuntimeException {
 

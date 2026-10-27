@@ -1,5 +1,5 @@
 
-package com.example.demo.exceptions;
+package com.example.backend.exceptions;
 
 public class ActionNotAllowed extends RuntimeException{
 

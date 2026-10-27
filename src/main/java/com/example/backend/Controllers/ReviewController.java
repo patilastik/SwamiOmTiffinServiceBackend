@@ -1,12 +1,13 @@
-package com.example.demo.controller;
+// package com.example.demo.controller;
+package com.example.backend.controllers;
 
 import org.springframework.web.bind.annotation.*;
-import com.example.demo.dto.ReviewDTO;
-import com.example.demo.service.ReviewService;
+import com.example.backend.dto.ReviewDTO;
+import com.example.backend.services.ReviewService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
-import com.example.demo.exceptions.InvalidValueException;
-import com.example.demo.exceptions.ActionNotAllowed;
+import com.example.backend.exceptions.InvalidValueException;
+import com.example.backend.exceptions.ActionNotAllowed;
 
 @RestController
 @RequestMapping("/api/review")

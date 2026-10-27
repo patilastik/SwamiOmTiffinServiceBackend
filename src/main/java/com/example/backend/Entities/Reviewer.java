@@ -1,4 +1,4 @@
-package com.example.demo.entity;
+package com.example.backend.entities;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -7,6 +7,8 @@ import jakarta.persistence.Id;
 import lombok.NoArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+
+import jakarta.persistence.Column;
 
 @Entity
 @NoArgsConstructor

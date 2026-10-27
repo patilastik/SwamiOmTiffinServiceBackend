@@ -2,6 +2,8 @@
 package com.example.backend.services;
 
 import com.example.backend.dto.ReviewDTO;
+import com.example.backend.dto.ReturnReviewsDTO;
+
 import com.example.backend.entities.Reviewer;
 import org.springframework.stereotype.Service;
 import com.example.backend.exceptions.InvalidValueException;
@@ -13,8 +15,10 @@ import org.springframework.http.MediaType;
 
 import java.util.Map;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.Optional;
-import java.util.regex.Pattern;
 
 import com.openai.models.moderations.ModerationCreateParams;
 import com.openai.client.OpenAIClient;

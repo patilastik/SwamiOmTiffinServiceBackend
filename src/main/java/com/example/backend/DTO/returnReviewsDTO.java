@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class returnReviewsDTO {
+public class ReturnReviewsDTO {
     private String email;
     private String name;
     private String message;

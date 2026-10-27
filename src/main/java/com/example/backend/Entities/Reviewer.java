@@ -8,6 +8,9 @@ import lombok.NoArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+import jakarta.persistence.PrePersist;
+
 import jakarta.persistence.Column;
 
 @Entity

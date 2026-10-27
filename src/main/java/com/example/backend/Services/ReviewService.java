@@ -6,11 +6,13 @@ import com.example.backend.entities.Reviewer;
 import org.springframework.stereotype.Service;
 import com.example.backend.exceptions.InvalidValueException;
 import com.example.backend.exceptions.ActionNotAllowed;
+import com.example.backend.exceptions.NoReviewsFoundException;
 
 import org.springframework.web.client.RestClient;
 import org.springframework.http.MediaType;
 
 import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -148,4 +150,27 @@ public class ReviewService {
          throw new RuntimeException("Something went wrong, please try again later!");
        }
     }
+
+    // Returns the first 5 reviews
+    public  List<ReturnReviewsDTO> returnReviews()
+     {
+        List<Reviewer> reviewers = reviewerRepository.findTop5ByOrderByCreatedAtDesc();
+        if(reviewers.isEmpty())
+        {
+            throw new NoReviewsFoundException("No reviews found");
+        }
+        List<ReturnReviewsDTO> returnReviewsDTOs = new ArrayList<>();
+        for(Reviewer reviewer : reviewers)
+         {
+            ReturnReviewsDTO returnReviewsDTO = new ReturnReviewsDTO();
+            returnReviewsDTO.setEmail(reviewer.getEmail());
+            returnReviewsDTO.setName(reviewer.getFirstName()+" "+reviewer.getLastName());
+            returnReviewsDTO.setMessage(reviewer.getMessage());
+            returnReviewsDTO.setStars(reviewer.getStars());
+            returnReviewsDTO.setCreatedAt(reviewer.getCreatedAt());
+            returnReviewsDTOs.add(returnReviewsDTO);
+         }
+        return returnReviewsDTOs;
+     }
+
 }

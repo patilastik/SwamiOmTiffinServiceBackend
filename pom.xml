@@ -99,7 +99,7 @@
                 <version>3.13.0</version>
                 <configuration>
                     <release>17</release>
-					<proc>full</proc>
+					 <!-- <proc>full</proc> -->
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>

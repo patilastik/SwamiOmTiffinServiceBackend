@@ -157,7 +157,7 @@ public class ReviewService {
     }
 
     // Returns the first 5 reviews
-    public ReviewPageInfoDTO returnReviews()
+    public ReviewPageInfoDTO returnReviewPageInfo()
      {
         List<Reviewer> reviewers = reviewerRepository.findTop5ByOrderByCreatedAtDesc();
         if(reviewers.isEmpty())

@@ -4,7 +4,7 @@ package com.example.backend.controllers;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.backend.dto.StoreReviewDTO;
-import com.example.backend.dto.ReturnReviewsDTO;
+import com.example.backend.dto.ReviewsDTO;
 
 
 import com.example.backend.services.ReviewService;

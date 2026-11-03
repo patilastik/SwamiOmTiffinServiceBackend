@@ -11,7 +11,7 @@ import lombok.AllArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class ReviewDTO {
+public class StoreReviewDTO {
 
     private String email;
     private String firstName;

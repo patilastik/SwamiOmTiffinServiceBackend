@@ -2,7 +2,8 @@
 package com.example.backend.services;
 
 import com.example.backend.dto.StoreReviewDTO;
-import com.example.backend.dto.ReturnReviewsDTO;
+import com.example.backend.dto.ReviewsDTO;
+import com.example.backend.dto.ReviewPageInfoDTO;
 
 import com.example.backend.entities.Reviewer;
 import org.springframework.stereotype.Service;
@@ -156,25 +157,31 @@ public class ReviewService {
     }
 
     // Returns the first 5 reviews
-    public  List<ReturnReviewsDTO> returnReviews()
+    public ReviewPageInfoDTO returnReviews()
      {
         List<Reviewer> reviewers = reviewerRepository.findTop5ByOrderByCreatedAtDesc();
         if(reviewers.isEmpty())
         {
             throw new NoReviewsFoundException("No reviews found");
         }
-        List<ReturnReviewsDTO> returnReviewsDTOs = new ArrayList<>();
+        ReviewPageInfoDTO reviewPageInfoDTO = new ReviewPageInfoDTO(); // This object will contains the data which we are goint to retunrn
+        List<ReviewsDTO> reviewsDTOList = new ArrayList(); // This list will contains the data of first 5 reviews
         for(Reviewer reviewer : reviewers)
          {
-            ReturnReviewsDTO returnReviewsDTO = new ReturnReviewsDTO();
-            returnReviewsDTO.setEmail(reviewer.getEmail());
-            returnReviewsDTO.setName(reviewer.getFirstName()+" "+reviewer.getLastName());
-            returnReviewsDTO.setMessage(reviewer.getMessage());
-            returnReviewsDTO.setStars(reviewer.getStars());
-            returnReviewsDTO.setCreatedAt(reviewer.getCreatedAt());
-            returnReviewsDTOs.add(returnReviewsDTO);
+            ReviewsDTO reviewsDTO = new ReviewsDTO();
+            reviewsDTO.setEmail(reviewer.getEmail());
+            reviewsDTO.setName(reviewer.getFirstName()+" "+reviewer.getLastName());
+            reviewsDTO.setMessage(reviewer.getMessage());
+            reviewsDTO.setStars(reviewer.getStars());
+            reviewsDTO.setCreatedAt(reviewer.getCreatedAt());
+            reviewsDTOList.add(reviewsDTO);
          }
-        return returnReviewsDTOs;
-     }
+        reviewPageInfoDTO.setReviewsDTO(reviewsDTOList); // Stores the reviews 
+        reviewPageInfoDTO.setAverageRating(reviewerRepository.getAverageRating()); // sets the average rating
+        reviewPageInfoDTO.setTotalReviews(reviewerRepository.count());// sets the total number reviews
+        // Let's now store the average ratinga and total number of reviews
+        return reviewPageInfoDTO;
 
-}
+     } // method ends here
+
+} // class ends here

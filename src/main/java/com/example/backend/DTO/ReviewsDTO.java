@@ -1,3 +1,4 @@
+// Each single object of this class contains a single review information
 package com.example.backend.dto;
 
 import lombok.Getter;
@@ -10,7 +11,7 @@ import lombok.AllArgsConstructor;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReturnReviewsDTO {
+public class ReviewsDTO {
     private String email;
     private String name;
     private String message;

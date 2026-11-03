@@ -3,7 +3,7 @@ package com.example.backend.controllers;
 
 import org.springframework.web.bind.annotation.*;
 
-import com.example.backend.dto.ReviewDTO;
+import com.example.backend.dto.StoreReviewDTO;
 import com.example.backend.dto.ReturnReviewsDTO;
 
 
@@ -28,7 +28,7 @@ public class ReviewController {
     }
 
     @PostMapping("/storeReview")
-    public ResponseEntity<?> storeReview(@RequestBody ReviewDTO reviewDTO) {
+    public ResponseEntity<?> storeReview(@RequestBody StoreReviewDTO reviewDTO) {
         try
          {
             reviewService.storeReview(reviewDTO);

@@ -1,7 +1,7 @@
 // package com.example.demo.service;
 package com.example.backend.services;
 
-import com.example.backend.dto.ReviewDTO;
+import com.example.backend.dto.StoreReviewDTO;
 import com.example.backend.dto.ReturnReviewsDTO;
 
 import com.example.backend.entities.Reviewer;
@@ -47,7 +47,7 @@ public class ReviewService {
     // 4) Check if the first name and last name contains any bad word, if yes then throw exception.
     // 5) Check if the stars are between 0 and 5, if not then throw exception - Done
     // 6) Check if the message contains any bad word, if yes then throw exception.
-    public void storeReview(ReviewDTO reviewDTO) 
+    public void storeReview(StoreReviewDTO reviewDTO) 
      {
         // Check whether data for all fields is send from frontend
         if(reviewDTO.getEmail()==null || reviewDTO.getEmail().isBlank())

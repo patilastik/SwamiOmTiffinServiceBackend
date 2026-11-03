@@ -48,10 +48,10 @@ public class ReviewController {
          }
     }
    
-   @GetMapping("/getReviews")
-   public ResponseEntity<?> returnReviews(){
+   @GetMapping("/getReviewPageInfo")
+   public ResponseEntity<?> returnReviewPageInfo(){
       try{
-         return ResponseEntity.ok(reviewService.returnReviews());
+         return ResponseEntity.ok(reviewService.returnReviewPageInfo());
       }
       catch(NoReviewsFoundException e)
        {

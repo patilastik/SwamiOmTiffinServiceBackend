@@ -19,7 +19,8 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:5173") // fontend locally runs at this port, later on I will replace this with actual production server url
+                        .allowedOrigins("http://localhost:5173", // local url
+                        "https://swamiomtiffinservice.netlify.app") // netlify url
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*");
             }
